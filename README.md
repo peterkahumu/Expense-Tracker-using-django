@@ -1,5 +1,3 @@
-
-```markdown
 # Django Expenses Tracker
 
 A Django-based application to track expenses.
@@ -117,4 +115,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact
 
 For any questions or issues, please contact [muhumukip@gmail.com](mailto:muhumukip@gmail.com).
-```
+
