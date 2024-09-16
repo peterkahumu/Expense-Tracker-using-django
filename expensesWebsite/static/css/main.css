@@ -12,3 +12,12 @@
       font-size: 3.5rem;
     }
   }
+ 
+  .togglePassword{
+    cursor: pointer;
+    transition: all;
+  }
+
+  .togglePassword:hover{
+    transform: scale(1.2);
+  }
