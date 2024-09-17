@@ -11,6 +11,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import token_generator
+from django.contrib import auth
 
 # Create your views here.
 class UsernameValidation(View):
@@ -121,4 +122,23 @@ class Login(View):
         return render(request, 'authentication/login.html')
 
     def post(self, request):
-        pass        
+        data = request.POST
+        username = data['username']
+        password = data['password']
+        
+        if username and password:
+            
+            user = auth.authenticate(username=username, password=password)
+            
+            if user:
+                if user.is_active:
+                    auth.login(request, user)
+                    messages.success(request, f'Welcome {user.username}.')
+                    return redirect('expenses')
+
+                messages.error(request, 'Account inactive. Please activate using the link sent to you email.')
+                return render(request, 'authentication/login.html')
+            messages.error(request, 'Invalid credentials. Please try again.')
+            return render(request, 'authentication/login.html')
+        messages.error(request, "Please fill all the fields before trying to log in.")
+        return render(request, 'authenticate/login.html')

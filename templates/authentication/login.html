@@ -12,28 +12,19 @@
                 </div>
                 {% include 'partials/_messages.html' %}
 
-                <form action="{% url 'register' %}" method="post">
+                <form action="{% url 'login' %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <input type="text" name="username" id="username" class="form-control form-control-sm"
                             placeholder="Username" value="{{fieldValues.username}}">
-                    </div>
-                    <div class="username-feedback invalid-feedback" style="display: none;"></div>
+                    </div>                   
                     <span class="valid-feedback text-sm username-success" style="display: none;"></span>
-
-                    <div class="form-group">
-                        <input type="email" name="email" id="email" class="form-control form-control-sm"
-                            placeholder="Email" value = '{{fieldValues.email}}'>
-                    </div>
-                    <div class="email-feedback invalid-feedback" style="display: none;"></div>
-                    <span class="valid-feedback text-sm email-success" style="display: none;"></span>
 
                     <div class="form-group">
                         <input type="password" name="password" id="password" class="form-control form-control-sm"
                             placeholder="Password" class="{{fieldValues.password}}">
                         <small class="float-right py-3 togglePassword" >Show</small>
                     </div>
-                    <div class="password-feedback invalid-feedback" style="display: none;"></div>
 
                     <input type="submit" value="Login" class="btn btn-block btn-primary submit-btn">
                 </form>
@@ -42,6 +33,4 @@
     </div>
     <div class="col-md-4"></div>
 </div>
-
-<script src="{% static 'js/register.js' %}"></script>
 {% endblock %}
