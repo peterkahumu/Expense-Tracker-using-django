@@ -141,4 +141,15 @@ class Login(View):
             messages.error(request, 'Invalid credentials. Please try again.')
             return render(request, 'authentication/login.html')
         messages.error(request, "Please fill all the fields before trying to log in.")
-        return render(request, 'authenticate/login.html')
+        return render(request, 'authentication/login.html')
+    
+class Logout(View):
+    def post(self, request):
+        
+        if request.user.is_authenticated:
+            auth.logout(request)
+            messages.success(request, 'You have been logged out.')
+            return redirect('login')
+        
+        messages.error(request, "You are not logged in. Please login first.")
+        return redirect('login')
