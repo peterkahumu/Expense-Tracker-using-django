@@ -113,10 +113,6 @@ class Verification(View):
             messages.error(request, e)
             return redirect('register')
 
-        
-    
-        
-
 class Login(View):
     def get(self, request):
         return render(request, 'authentication/login.html')

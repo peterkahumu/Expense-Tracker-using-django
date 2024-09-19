@@ -2,15 +2,30 @@
 {% block content %}
 
 <div class="container mt-3">
+    {% include 'partials/_messages.html' %}
+    {% if user_preferences.currency %}
+        <div class="alert alert-info"  role="alert">
+            Current Curreny: {{user_preferences.currency}}
+        </div>
+    {% else %}
+        <div class="alert alert-info"  role="alert">
+            No currency selected
+        </div>  
+    {% endif %}
     <form action="{% url 'preferences' %}" method="post">
+        {% csrf_token %}
         <div class="input-group mb-3">
             <div class="input-group">
-                <select class="custom-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-                    <option selected>Choose...</option>
+                <select class="custom-select" name="currency" id="inputGroupSelect04">
+                    <option value="" disabled {% if not use_preferences.currency %}selected{% endif %}>Choose...</option>
                     {% for currency in currencies %}
-                    <option value="">{{currency.name}} - {{currency.value}}</option>
+                        <option value="{{ currency.name }} - {{ currency.value }}"
+                            {% if user_preferences.currency == currency.name %}selected{% endif %}>
+                            {{ currency.name }} - {{ currency.value }}
+                        </option>
                     {% endfor %}
                 </select>
+                
                 <input class="btn btn-outline-primary" type="submit" value="Save">
             </div>
         </div>
