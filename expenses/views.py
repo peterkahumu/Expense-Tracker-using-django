@@ -6,9 +6,11 @@ from django.contrib import messages
 @login_required(login_url='login')
 def index(request):
     categories = Category.objects.all()
+    expenses = Expense.objects.filter(owner=request.user)
     
     context = {
         'categories': categories,
+        'expenses': expenses,
     }
     return render(request, 'expenses/index.html', context)
 
@@ -51,4 +53,10 @@ def addExpense(request):
             return render(request, 'expenses/add_expenses.html', context)
         
     return render(request, 'expenses/add_expenses.html', context)
+
+def editExpense(request):
+    pass
+
+def deleteExpense(request):
+    pass
 

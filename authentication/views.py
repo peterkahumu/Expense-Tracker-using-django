@@ -90,7 +90,7 @@ class RegistrationView(View):
                )
                 
                 email.send(fail_silently=False)
-                messages.success(request, "Congratulations ! Account created successfully.")
+                messages.success(request, "Congratulations ! Account created successfully. Please check your email to activate your account.")
                 return render(request, 'authentication/register.html')
 
 class Verification(View):
