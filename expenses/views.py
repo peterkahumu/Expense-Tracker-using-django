@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Category, Expense
 from django.contrib import messages
@@ -54,9 +54,60 @@ def addExpense(request):
         
     return render(request, 'expenses/add_expenses.html', context)
 
-def editExpense(request):
-    pass
-
-def deleteExpense(request):
-    pass
+def editExpense(request, id):
+    expense = get_object_or_404(Expense, pk=id)
+    categories = Category.objects.all()
+    context = {
+        "expense":expense,
+        'categories': categories,
+    }
+    
+    if request.method == 'POST':
+        amount = request.POST['amount']
+        category = request.POST['category']
+        description = request.POST['description']
+        date = request.POST['date']
+        
+        if not amount:
+            messages.error(request, "Amount is required")
+            return render(request, 'expenses/edit_expense.html', context)
+        
+        if not description:
+            messages.error(request, "Description is required")
+            return render(request, 'expenses/edit_expense.html', context)
+        
+        if not category:
+            messages.error(request, "Category is required")
+            return render(request, 'expenses/edit_expense.html', context)
+        
+        if not date:
+            messages.error(request, "Date is required")
+            return render(request, 'expenses/edit_expense.html', context)
+        
+        expense.amount = amount
+        expense.category = category
+        expense.description = description
+        expense.date = date
+        
+        try:
+            expense.save()
+            messages.success(request, "Expense updated successfully")
+            return redirect('expenses')
+        except Exception as e:
+            messages.error(request, f"An error occurred while updating the expense. {e}")
+            return render(request, 'expenses/edit_expense.html', context)
+        
+    return render(request, 'expenses/edit_expense.html', context)
+    
+def deleteExpense(request, id):
+    expense  = get_object_or_404(Expense, pk=id)
+    
+    try:
+        expense.delete()
+        messages.success(request, "Expense deleted successfully")
+        return redirect('expenses')
+    except Exception as e:
+        messages.error(request, f"An error occurred while deleting the expense. Please try again later. {e}")
+        return redirect('expenses')
+    
 
