@@ -20,7 +20,7 @@
                     <option value="" disabled {% if not use_preferences.currency %}selected{% endif %}>Choose...</option>
                     {% for currency in currencies %}
                         <option value="{{ currency.name }} - {{ currency.value }}"
-                            {% if user_preferences.currency == currency.name %}selected{% endif %}>
+                            {% if user_preferences.currency  == currency.name %}selected{% endif %}>
                             {{ currency.name }} - {{ currency.value }}
                         </option>
                     {% endfor %}
