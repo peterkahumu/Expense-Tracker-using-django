@@ -10,7 +10,7 @@
         <div class="col-md-10">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="" {>Expenses</a></li>
+                    <li class="breadcrumb-item"><a href="" >Expenses</a></li>
                     <li class="breadcrumb-item active" aria-current="page">My Expenses</li>
                 </ol>
             </nav>
@@ -69,19 +69,25 @@
             </div>
     
             <ul class="pagination align-right float-right mr-auto">
-                {% if page_obj.has_previous %}
-                <li {% if page_obj.number==1 %} class="page-item active" {% endif %}><a class="page-link"
-                        href="?page=1">&laquo;1</a></li>
-                <li class="page-item"><a class="page-link" href="?page= {{ page_obj.previous_page_number }}">Previous</a>
-                </li>
+                {% if page_obj.number > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1"><<1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
                 {% endif %}
-    
+                
                 {% if page_obj.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{page_obj.next_page_number}}">Next</a></li>
-                <li class="page-item"><a class="page-link"
-                        href="?page={{page_obj.paginator.num_pages}}">{{page_obj.paginator.num_pages}}</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
                 {% endif %}
-            </ul>
+                
+                <li class="page-item {% if page_obj.number == page_obj.paginator.num_pages %} disabled {% endif %}">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"{% if page_obj.number == page_obj.paginator.num_pages %} tabindex="-1" aria-disabled="true"{% endif %}>{{ page_obj.paginator.num_pages }} &gt;&gt;</a>
+                </li>
+            </ul>           
         </div>
     </div>
 </div>
