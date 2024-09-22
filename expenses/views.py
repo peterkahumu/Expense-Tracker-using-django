@@ -2,17 +2,25 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Category, Expense
 from django.contrib import messages
+from django.core.paginator import Paginator
+
 # Create your views here.
 @login_required(login_url='login')
 def index(request):
     categories = Category.objects.all()
     expenses = Expense.objects.filter(owner=request.user)
     
+    # Pagination
+    paginator = Paginator(expenses, 2)
+    page_number = request.GET.get('page')   
+    # construct the page object.
+    page_obj = paginator.get_page(page_number)
     context = {
-        'categories': categories,
         'expenses': expenses,
+        'page_obj': page_obj,
     }
     return render(request, 'expenses/index.html', context)
+
 
 def addExpense(request):
     categories = Category.objects.all()
