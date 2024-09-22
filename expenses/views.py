@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Category, Expense
 from django.contrib import messages
+from django.views import View
 from django.core.paginator import Paginator
+import json
+from django.http import JsonResponse
 
 # Create your views here.
 @login_required(login_url='login')
@@ -11,7 +14,7 @@ def index(request):
     expenses = Expense.objects.filter(owner=request.user)
     
     # Pagination
-    paginator = Paginator(expenses, 2)
+    paginator = Paginator(expenses, 5)
     page_number = request.GET.get('page')   
     # construct the page object.
     page_obj = paginator.get_page(page_number)
@@ -118,4 +121,12 @@ def deleteExpense(request, id):
         messages.error(request, f"An error occurred while deleting the expense. Please try again later. {e}")
         return redirect('expenses')
     
+class SearchExpense(View):
+    def post(self, request):
+        search_str = json.loads(request.body).get('searchText', '')
+        expenses = Expense.objects.filter(amount__istartswith=search_str, owner=request.user) | Expense.objects.filter(description__icontains = search_str, owner=request.user) | Expense.objects.filter(date__icontains = search_str, owner=request.user) | Expense.objects.filter(category__icontains = search_str, owner=request.user)
+        
+        data = expenses.values()
+        
+        return JsonResponse(list(data), safe = False)
 
