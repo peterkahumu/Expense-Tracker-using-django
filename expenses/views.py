@@ -14,7 +14,7 @@ def index(request):
     expenses = Expense.objects.filter(owner=request.user)
     
     # Pagination
-    paginator = Paginator(expenses, 2)
+    paginator = Paginator(expenses, 5)
     page_number = request.GET.get('page')   
     # construct the page object.
     page_obj = paginator.get_page(page_number)
@@ -123,7 +123,7 @@ def deleteExpense(request, id):
     
 class SearchExpense(View):
     def post(self, request):
-        search_str = json.loads(request.body).get('search', '')
+        search_str = json.loads(request.body).get('data')
         expenses = Expense.objects.filter(amount__istartswith=search_str, owner=request.user) | Expense.objects.filter(description__icontains = search_str, owner=request.user) | Expense.objects.filter(date__icontains = search_str, owner=request.user) | Expense.objects.filter(category__icontains = search_str, owner=request.user)
         
         data = expenses.values()
