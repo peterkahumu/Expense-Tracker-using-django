@@ -30,6 +30,7 @@
                 </div>
             </div>
         </div>
+       <div class="app-table">
         <table class="table table-hover table-striped">
             <thead>
                 <tr>
@@ -62,7 +63,25 @@
                     {% endif %}
             </tbody>
         </table>
+       </div>
         
+        <div class="table-output">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Amount (Curreny)</th>
+                        <th>Category</th>
+                        <th>Notes</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+    
+                <tbody class="table-body">
+                        
+                </tbody>
+            </table>
+        </div>
         <div class="pagination-container">
             <div class="pagination align-left float-left">
                 Showing page {{page_obj.number }} of {{page_obj.paginator.num_pages}}
@@ -89,6 +108,8 @@
                 </li>
             </ul>           
         </div>
+
+
     </div>
 </div>
 <script src="{% static 'js/searchExpenses.js' %}" {% endblock %}
