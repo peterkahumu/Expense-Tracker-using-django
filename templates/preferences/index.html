@@ -17,14 +17,15 @@
         <div class="input-group mb-3">
             <div class="input-group">
                 <select class="custom-select" name="currency" id="inputGroupSelect04">
-                    <option value="" disabled {% if not use_preferences.currency %}selected{% endif %}>Choose...</option>
+                    <option value="" disabled {% if not user_preferences.currency %}selected{% endif %}>Choose...</option>
                     {% for currency in currencies %}
                         <option value="{{ currency.name }} - {{ currency.value }}"
-                            {% if user_preferences.currency  == currency.name %}selected{% endif %}>
+                                {% if currency.name == user_preferences.name %}selected{% endif %}>
                             {{ currency.name }} - {{ currency.value }}
                         </option>
                     {% endfor %}
                 </select>
+                
                 
                 <input class="btn btn-outline-primary" type="submit" value="Save">
             </div>

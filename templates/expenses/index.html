@@ -34,7 +34,7 @@
         <table class="table table-hover table-striped">
             <thead>
                 <tr>
-                    <th>Amount (Curreny)</th>
+                    <th>Amount ({% if currency %} {{currency}} {% else %} None {% endif %})</th>
                     <th>Category</th>
                     <th>Notes</th>
                     <th>Date</th>
