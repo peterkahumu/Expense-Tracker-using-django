@@ -18,7 +18,7 @@
         </div>
     </div>
     {% include 'partials/_messages.html' %}
-    <!-- <div class="container">
+    <div class="container">
 
         <div class="row">
             <div class="col-md-8"></div>
@@ -34,39 +34,39 @@
                     <tr>
                         <th>Amount ({{currency}})
                         <th>Notes</th>
-                        <th>Date</th>
+                        <th>Date Added</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {% if income.count %}
-                    {% for expense in page_obj %}
+                    {% for income in page_obj %}
                     <tr>
-                        <td>{{expense.amount}}</td>
-                        <td>{{expense.category}}</td>
-                        <td>{{expense.description}}</td>
-                        <td>{{expense.date}}</td>
+                        <td>{{income.amount}}</td>
+                        <td>{{income.source}}</td>
+                        <td>{{income.description}}</td>
+                        <td>{{income.date}}</td>
                         <td>
-                            <a href="{% url 'edit-expense' expense.id%}" class="btn
+                            <a href="{% url 'edit-income' income.id %}" class="btn
                         btn-primary">Edit</a>
-                            <a href="{% url 'delete-expense' expense.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            <a href="{% url 'delete-income' income.id %}" class="btn btn-sm btn-danger">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
                     {% else %}
                     <tr>
-                        <td colspan="5">No expenses found</td>
+                        <td colspan="5">No Income record found</td>
                         {% endif %}
                 </tbody>
             </table>
         </div>
 
-        <div class="table-output">
+        <!-- <div class="table-output">
             <table class="table table-hover table-striped">
                 <thead>
                     <tr>
-                        <th>Amount (Curreny)</th>
+                        <th>Amount ({{currency}})</th>
                         <th>Category</th>
                         <th>Notes</th>
                         <th>Date</th>
@@ -78,38 +78,34 @@
 
                 </tbody>
             </table>
-        </div>
+        </div> -->
         <div class="pagination-container">
             <div class="pagination align-left float-left">
                 Showing page {{page_obj.number }} of {{page_obj.paginator.num_pages}}
             </div>
-
+    
             <ul class="pagination align-right float-right mr-auto">
                 {% if page_obj.number > 1 %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1">
-                        <<1< /a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1"><<1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
                 {% endif %}
-
+                
                 {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
                 {% endif %}
-
+                
                 <li class="page-item {% if page_obj.number == page_obj.paginator.num_pages %} disabled {% endif %}">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" {% if
-                        page_obj.number==page_obj.paginator.num_pages %} tabindex="-1" aria-disabled="true" {% endif
-                        %}>{{ page_obj.paginator.num_pages }} &gt;&gt;</a>
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"{% if page_obj.number == page_obj.paginator.num_pages %} tabindex="-1" aria-disabled="true"{% endif %}>{{ page_obj.paginator.num_pages }} &gt;&gt;</a>
                 </li>
-            </ul>
+            </ul>           
         </div>
-
-    </div> -->
+    </div>
 </div>
 <script src="{% static 'js/searchIncome' %}"></script>
 

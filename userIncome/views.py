@@ -1,14 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from django.core.paginator import Paginator
 from userpreferences.models import UserPreferences
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 # Create your views here.
 @login_required(login_url = '/authentication/login')
 def index(request):
-    sources = SourceModel.objects.all()
+    sources = Source.objects.all()
+    user = request.user
     income = UserIncome.objects.filter(owner = request.user)
     paginator = Paginator(income, 5)
     page_number = request.GET.get('page')
@@ -26,5 +28,101 @@ def index(request):
     
     return render(request, 'income/index.html', context=context)
 
+@login_required(login_url='authentication/login')
 def add_income(request):
-    return render(request, 'income/add_income.html')
+    user = request.user
+    sources = Source.objects.all()
+    values = request.POST
+    context = {
+        'sources': sources,
+        'values': values,   
+    }
+    if request.method == 'POST':
+        amount = request.POST['amount']
+        description = request.POST['description']
+        source = request.POST['source']
+        date = request.POST['date']
+        
+        # validation.
+        if not amount:
+            messages.error(request, 'Amount required.')
+            return render(request, 'income/add_income.html', context)
+        
+        if not description:
+            messages.error(request, 'Description required.')
+            return render(request, 'income/add_income.html', context)
+        
+        if not source:
+            messages.error(request, 'Source required.')
+            return render(request, 'income/add_income.html', context)
+        
+        if not date:
+            messages.error(request, 'Date required.')
+            return render(request, 'income/add_income.html', context)
+        
+        if UserIncome.objects.create(amount=amount, description=description, source=source, date=date, owner=user):
+            messages.success(request, 'Income created successfully.')
+            return redirect('income')
+        else:
+            messages.error(request, "Error creating the expense. If the error persists, please try again later.", context)
+            return render(request, 'income/add_income.html', context)
+    return render(request, 'income/add_income.html', context = context)
+
+@login_required(login_url='authentication/login')
+def edit_income(request, id):
+    user = request.user
+    income = get_object_or_404(UserIncome, pk=id)
+    sources = Source.objects.all()
+    context = {
+        'income': income,
+        'sources': sources,
+    }
+    
+    if request.method == 'POST':
+        amount = request.POST['amount']
+        description = request.POST['description']
+        source = request.POST['source']
+        date = request.POST['date']
+        
+        # validation.
+        if not amount:
+            messages.error(request, 'Amount required.')
+            return render(request, 'income/edit_income.html', context)
+        
+        if not description:
+            messages.error(request, 'Description required.')
+            return render(request, 'income/edit_income.html', context)
+        
+        if not source:
+            messages.error(request, 'Source required.')
+            return render(request, 'income/edit_income.html', context)
+        
+        if not date:
+            messages.error(request, 'Date required.')
+            return render(request, 'income/edit_income.html', context)
+        
+        
+        income.amount = amount
+        income.description = description
+        income.source = source
+        income.date = date
+        
+        try:
+            income.save()
+            messages.success(request, 'income updated successfully')
+            return redirect('income')
+        except Exception as e:
+            messages.error(request, "An error occured while updating the expense. Please try again. If the error persists, please try again later. ", e)
+            return render(request, 'income/edit_income.html', context)
+    return render(request, 'income/edit_income.html', context)
+
+def delete_income(request, id):
+    income = get_object_or_404(UserIncome, pk=id)
+    
+    try:
+        income.delete()
+        messages.success(request, 'Income has been deleted successfully.')
+        return redirect('income')
+    except Exception as e:
+        messages.error(request, f"There was an error deleting the expense. {e}")
+        return render(request, 'income/index.html')
