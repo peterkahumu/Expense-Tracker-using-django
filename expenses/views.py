@@ -33,7 +33,7 @@ def index(request):
     }
     return render(request, 'expenses/index.html', context)
 
-
+@login_required(login_url='login')
 def addExpense(request):
     categories = Category.objects.all()
     owner = request.user
@@ -74,6 +74,7 @@ def addExpense(request):
         
     return render(request, 'expenses/add_expenses.html', context)
 
+@login_required(login_url='login')
 def editExpense(request, id):
     expense = get_object_or_404(Expense, pk=id)
     categories = Category.objects.all()
@@ -118,7 +119,8 @@ def editExpense(request, id):
             return render(request, 'expenses/edit_expense.html', context)
         
     return render(request, 'expenses/edit_expense.html', context)
-    
+ 
+@login_required(login_url='login')   
 def deleteExpense(request, id):
     expense  = get_object_or_404(Expense, pk=id)
     
@@ -129,7 +131,8 @@ def deleteExpense(request, id):
     except Exception as e:
         messages.error(request, f"An error occurred while deleting the expense. Please try again later. {e}")
         return redirect('expenses')
-    
+
+
 class SearchExpense(View):
     def post(self, request):
         search_str = json.loads(request.body).get('data')
