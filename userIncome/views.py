@@ -4,6 +4,8 @@ from django.core.paginator import Paginator
 from userpreferences.models import UserPreferences
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
+import json
 
 
 # Create your views here.
@@ -28,7 +30,7 @@ def index(request):
     
     return render(request, 'income/index.html', context=context)
 
-@login_required(login_url='authentication/login')
+@login_required(login_url='/authentication/login')
 def add_income(request):
     user = request.user
     sources = Source.objects.all()
@@ -68,7 +70,7 @@ def add_income(request):
             return render(request, 'income/add_income.html', context)
     return render(request, 'income/add_income.html', context = context)
 
-@login_required(login_url='authentication/login')
+@login_required(login_url='/authentication/login')
 def edit_income(request, id):
     user = request.user
     income = get_object_or_404(UserIncome, pk=id)
@@ -116,6 +118,7 @@ def edit_income(request, id):
             return render(request, 'income/edit_income.html', context)
     return render(request, 'income/edit_income.html', context)
 
+@login_required(login_url='/authentication/login')
 def delete_income(request, id):
     income = get_object_or_404(UserIncome, pk=id)
     
@@ -126,3 +129,26 @@ def delete_income(request, id):
     except Exception as e:
         messages.error(request, f"There was an error deleting the expense. {e}")
         return render(request, 'income/index.html')
+    
+@login_required(login_url='/authentication/login')
+def searchIncome(request):
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    user = request.user
+    searchString = json.loads(request.body).get('searchValue').strip()  # Ensure no extra spaces
+
+    logger.debug(f'Searching for: {searchString}')
+    # If search string is empty, return all results or handle appropriately
+   
+    # Perform search based on different fields
+    income = UserIncome.objects.filter(
+        amount__istartswith=searchString, owner=user
+    ) | UserIncome.objects.filter(description__icontains=searchString, owner=user) | UserIncome.objects.filter(source__icontains=searchString, owner=user) | UserIncome.objects.filter(date__icontains=searchString, owner=user)
+        
+    logger.debug(f"Results: {list(income.values())}")
+
+    # Prepare data for the response
+    data = income.values()
+
+    return JsonResponse(list(data), safe=False)

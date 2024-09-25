@@ -1,49 +1,82 @@
 const search = document.querySelector('#search');
-const tableOutput = document.querySelector('.table-output');
 const appTable = document.querySelector('.app-table');
+const outputTable = document.querySelector('.table-output');
 const pagination = document.querySelector('.pagination-container');
 const tableBody = document.querySelector('.table-body');
 
-tableOutput.style.display = 'none'; // the table is hidden by default.
+// Hide the output table by default.
+outputTable.style.display = 'none';
+appTable.style.display = 'block';
 
-
+// Event listener for the search input
 search.addEventListener('keyup', (event) => {
+    const data = event.target.value.trim(); // Trim whitespace
 
-    const data = event.target.value;
+    if (searhValue.length > 0) {
+        appTable.style.display = 'none'; // Hide the main table
+        pagination.style.display = 'none'; // Hide pagination
+        outputTable.style.display = 'block'; // Show search results
 
-    if (data.trim().length > 0){
-        tableBody.innerHTML = "";
-        fetch('/search', {
-            body: JSON.stringify({data: data}),
-            method: 'POST', 
+        // Send the search request to the backend
+        fetch('/income/search-income', {
+            body: JSON.stringify({ data: data }),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
         })
         .then((response) => response.json())
         .then((data) => {
-            console.log('data', data);
-
-            appTable.style.display = 'none';
-            pagination.style.display = 'none';
-            tableOutput.style.display = 'block';
-
-            if (data.length === 0){
-                tableOutput.innerHTML = '<p>No result found.</p>'
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4">No matching results found.</td></tr>'; // Show no results
             } else {
-                data.forEach(element => {
+                tableBody.innerHTML = ''; // Clear previous results
+                data.forEach(income => {
                     tableBody.innerHTML += `
-                    <tr>
-                        <td>${element.amount}</td>
-                        <td>${element.category}</td>
-                        <td>${element.description}</td>
-                        <td>${element.date}</td>
-
-                    </tr>
+                        <tr>
+                            <td>${income.amount}</td>
+                            <td>${income.source}</td>
+                            <td>${income.description}</td>
+                            <td>${income.date}</td>
+                        </tr>
                     `;
                 });
             }
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error); // Handle errors
         });
+
     } else {
-        appTable.style.display = 'block';
-        pagination.style.display = 'block';
-        tableOutput.style.display = 'none';
+        // If search input is cleared, restore the default table
+        appTable.style.display = 'block'; // Show original table
+        pagination.style.display = 'block'; // Show pagination
+        outputTable.style.display = 'none'; // Hide search results
+
+        // Optionally: Fetch all data again (if needed)
+        fetch('/income/search-income', {
+            body: JSON.stringify({ data: '' }), // Send empty search value to reload all
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            tableBody.innerHTML = ''; // Clear previous results
+            data.forEach(income => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${income.amount}</td>
+                        <td>${income.source}</td>
+                        <td>${income.description}</td>
+                        <td>${income.date}</td>
+                    </tr>
+                `;
+            });
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
     }
-})
+});
