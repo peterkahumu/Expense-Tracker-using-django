@@ -1,0 +1,43 @@
+#header{
+    background: #3772ff;
+    color: #fff;
+}
+
+div.breadcrumbs {
+    background: #7303c0;
+    color: yellow;
+}
+
+div.breadcrumbs a {
+    color: yellow;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    color: var(--button-fg);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.login .submit-row input[type='submit']{
+    width: 100%;
+    background: #3d52d5;
+}
+
+.login .submit-row input[type='submit']:hover{
+    background: #090c9b;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    margin: 0;
+    padding: 8px;
+    font-weight: 400;
+    font-size: 0.8125rem;
+    text-align: left;
+    background: #3772ff;
+    color: white;
+}
+
