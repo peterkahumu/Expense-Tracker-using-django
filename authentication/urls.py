@@ -9,5 +9,7 @@ urlpatterns = [
     path('validate-username', csrf_exempt(UsernameValidation.as_view()), name = 'validate-username'),
     path('validate-email', csrf_exempt(emailValidation.as_view()), name = 'validate_email'),
     path('activate/<uidb64>/<token>', Verification.as_view(), name = 'activate'),
+    path('reset-password', csrf_exempt(ResetPassword.as_view()), name='reset-password'),
+    path('set-new-password/<uidb64>/<token>', SetNewPassword.as_view(), name='set-new-password'),
 ]
 

@@ -1,6 +1,6 @@
 <!-- get messages from the backend and display them for the user to see. -->
 {% if messages %}
-<div class="messages">
+<div class="messages" id="messages" data-duration="10000">
    {% for message in messages %}
    <div {% if message.tags %} class="alert alert-sm alert-{{message.tags }}{% endif %}" >
        {{ message }} 

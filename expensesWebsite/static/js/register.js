@@ -7,23 +7,7 @@ const emailFeedback = document.querySelector('.email-feedback');
 const emailSuccess = document.querySelector('.email-success');
 
 const password = document.querySelector('#password');  
-const togglePassword = document.querySelector('.togglePassword'); 
-
 const submitButton = document.querySelector('.submit-btn');
-
-const handleToggle = (event) => {
-
-    if (togglePassword.textContent === 'Show'){
-        togglePassword.textContent = 'Hide';
-
-        password.setAttribute('type', 'text');
-    } else {
-        togglePassword.textContent = 'Show';
-        password.setAttribute('type', 'password');
-    };
-};
-
-togglePassword.addEventListener('click', handleToggle );
 
 // event listener when the user start to type.
 username.addEventListener('keyup', (event) => {
