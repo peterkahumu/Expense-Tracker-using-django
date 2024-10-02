@@ -172,7 +172,8 @@ class ExpenseSummary(View):
                 final_data[category] = get_category_amount(category)
         
         return JsonResponse({'Expense_category': final_data}, safe=False)
-    
+   
+@login_required(login_url='login') 
 def stats_view(request):
     return render(request, 'expenses/stats.html')
         

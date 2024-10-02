@@ -16,14 +16,15 @@
             </nav>
         </div>
         <div class="col-md-2">
-            <a href="" class="btn btn-primary">Back to Expenses</a>
+            <a href="{% url 'expenses' %}" class="btn btn-primary">Back to Expenses</a>
         </div>
     </div>
     {% include 'partials/_messages.html' %}
 
-       
 
-
+    <div class="chart">
+        <canvas id="expensesChart"></canvas>
     </div>
 </div>
+<script src="{% static 'js/charts.js' %}"></script>
 {% endblock %}

@@ -47,3 +47,11 @@
     transform: translateY(-5px);
   }
 }
+
+/* restrain the chart to a given height using the chart class. */
+.chart{
+  height: 300px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
