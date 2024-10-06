@@ -11,4 +11,7 @@ urlpatterns = [
     path('search', csrf_exempt(SearchExpense.as_view()), name = 'search' ),
     path('expense-summary', ExpenseSummary.as_view(), name = 'expense-summary'),
     path('expenses_stats', views.stats_view, name = 'expenses-stats'),
+    path('export-csv', views.export_csv, name = 'export-csv'),
+    path('export-excel', views.export_excel, name='export-excel'),
+    path('export-pdf', views.export_pdf, name='export-pdf')
 ]

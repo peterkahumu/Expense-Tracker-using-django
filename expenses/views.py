@@ -5,10 +5,14 @@ from django.contrib import messages
 from django.views import View
 from django.core.paginator import Paginator
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from userpreferences.models import UserPreferences
 import datetime
-
+import csv
+import xlwt
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.db.models import Sum
 
 # Create your views here.
 @login_required(login_url='login')
@@ -176,4 +180,53 @@ class ExpenseSummary(View):
 @login_required(login_url='login') 
 def stats_view(request):
     return render(request, 'expenses/stats.html')
-        
+
+@login_required(login_url='login')
+def export_csv(request):
+    response = HttpResponse(content_type = 'text/csv')
+    response['Content-Disposition'] = 'attachment; filename=Expense' + str(datetime.datetime.now()) + '.csv'
+
+    writer = csv.writer(response)
+    writer.writerow([f'EXPENSE DATA FOR {request.user.username}'])
+    writer.writerow(['Amount', 'Description', 'Category', 'Date'])
+
+    expenses = Expense.objects.filter(owner = request.user)
+
+    for expense in expenses:
+        writer.writerow([expense.amount, expense.description, expense.category, expense.date])
+
+    return response
+
+@login_required(login_url='login')
+def export_excel(request):
+    wb = xlwt.Workbook()
+    ws = wb.add_sheet(f"{request.user.username}'s Expenses")
+
+    ws.write(0, 0, 'Amount')
+    ws.write(0, 1, 'Description')
+    ws.write(0, 2, 'Category')
+    ws.write(0, 3, 'Date')
+
+    expenses = Expense.objects.filter(owner=request.user)
+
+    for row_number, expense in enumerate(expenses):
+        ws.write(row_number + 1, 0, expense.amount)
+        ws.write(row_number + 1, 1, expense.description)
+        ws.write(row_number + 1, 2, expense.category)
+        ws.write(row_number + 1, 3, expense.date)
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename = Expenses'+str(datetime.datetime.now())+'.xls'
+    wb.save(response)
+    
+    return response
+
+
+@login_required(login_url='login')
+def export_pdf(request):
+    
+    response = HttpResponse(content_type = 'application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=Expenses'+str(datetime.datetime().now()) + '.pdf'
+    response['Content-Transfer-Encoding'] = 'binary'
+
+    return response
