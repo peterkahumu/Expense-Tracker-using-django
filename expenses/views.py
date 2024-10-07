@@ -10,9 +10,15 @@ from userpreferences.models import UserPreferences
 import datetime
 import csv
 import xlwt
-from django.template.loader import render_to_string
-from weasyprint import HTML
-from django.db.models import Sum
+from django.conf import settings
+import os
+
+import io
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph, Spacer, Table, TableStyle, SimpleDocTemplate, Image, PageBreak
+from reportlab.lib.units import inch
 
 # Create your views here.
 @login_required(login_url='login')
@@ -224,9 +230,73 @@ def export_excel(request):
 
 @login_required(login_url='login')
 def export_pdf(request):
-    
-    response = HttpResponse(content_type = 'application/pdf')
-    response['Content-Disposition'] = 'attachment; filename=Expenses'+str(datetime.datetime().now()) + '.pdf'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=Expenses' + str(datetime.datetime.now()) + '.pdf'
     response['Content-Transfer-Encoding'] = 'binary'
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+
+    expenses = Expense.objects.filter(owner=request.user)
+
+    elements = []
+
+    logo_path = os.path.join(settings.BASE_DIR, 'expensesWebsite', 'static', 'img', 'logo.jpg')
+    heading_text = f"{request.user.username}'s Expenses from {expenses.order_by('date').first().date if expenses.exists() else 'N/A'} to {datetime.date.today()}"
+
+    heading_logo_table = Table(
+        [[Image(logo_path, width=1.5*inch, height=1*inch), Paragraph(heading_text, getSampleStyleSheet()['Heading1'])]],
+        colWidths=[2 * inch, 4 * inch],
+        hAlign='LEFT'
+    )
+    heading_logo_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+        ('VALIGN', (1, 0), (1, 0), 'TOP')
+    ]))
+
+    elements.append(heading_logo_table)
+    elements.append(Spacer(1, 0.5 * inch))
+
+    col_widths = [1.5 * inch, 3.5 * inch, 1.5 * inch, 1.5 * inch]
+    table_style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.blue),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.blue),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('WORDWRAP', (1, 1), (1, -1), 'CJK')
+    ])
+
+    rows_per_page = 25
+    expense_data = [['Amount', 'Description', 'Category', 'Date']]
+    for expense in expenses:
+        expense_data.append([expense.amount, Paragraph(expense.description, getSampleStyleSheet()['BodyText']), expense.category, expense.date])
+
+    pages = [expense_data[i:i + rows_per_page] for i in range(0, len(expense_data), rows_per_page)]
+    num_pages = len(pages)
+
+    def footer(canvas, doc, page_num, num_pages):
+        canvas.saveState()
+        canvas.setFont('Helvetica', 10)
+        footer_text = f"Page {page_num} of {num_pages}"
+        width, height = A4
+        canvas.drawRightString(width - 1 * inch, 0.75 * inch, footer_text)
+        canvas.restoreState()
+
+    for page_num, page_data in enumerate(pages, start=1):
+        table = Table(page_data, colWidths=col_widths)
+        table.setStyle(table_style)
+        elements.append(table)
+
+        if page_num < num_pages:
+            elements.append(PageBreak())
+
+    doc.build(elements, onFirstPage=lambda c, d: footer(c, d, 1, num_pages), onLaterPages=lambda c, d: footer(c, d, d.page, num_pages))
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
 
     return response
