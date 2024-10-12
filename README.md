@@ -112,6 +112,10 @@ Your application should now be running at `http://127.0.0.1:8000/`. You can acce
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Video Recording of the Project Working
+
+[Click here to watch the Video](https://youtu.be/zc-RxKg5omI?si=3NOcSFtE2WVcrEq)
+
 ## Contact
 
 For any questions or issues, please contact [muhumukip@gmail.com](mailto:muhumukip@gmail.com).
